@@ -12,5 +12,8 @@ migrateup:
 
 migratedown:
 	migrate -path database/migrate -database "postgresql://root:addison@172.18.48.243:5432/elo-system?sslmode=disable" -verbose down
-	
-.PHONY: postgres createdb dropdb migrateup migratedown
+
+sqlc:
+	sqlc generate
+
+.PHONY: postgres createdb dropdb migrateup migratedown sqlc
