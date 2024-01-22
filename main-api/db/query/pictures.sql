@@ -1,10 +1,11 @@
 -- name: CreatePicture :one
 INSERT INTO pictures (
+  description,
   url,
   matches,
   rating
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: GetPicture :one
@@ -24,7 +25,7 @@ LIMIT 2;
 
 -- name: UpdatePicture :one
 UPDATE pictures
-SET rating = $2
+SET rating = $2, matches = $3
 WHERE id = $1
 RETURNING *;
 
