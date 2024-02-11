@@ -1,10 +1,11 @@
 -- name: CreatePicture :one
 INSERT INTO pictures (
+  description,
   url,
   matches,
   rating
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4
 ) RETURNING *;
 
 -- name: GetPicture :one
