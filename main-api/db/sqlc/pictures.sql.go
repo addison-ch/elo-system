@@ -12,22 +12,29 @@ import (
 
 const createPicture = `-- name: CreatePicture :one
 INSERT INTO pictures (
+  description,
   url,
   matches,
   rating
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4
 ) RETURNING id, description, user_id, url, matches, rating, created_at
 `
 
 type CreatePictureParams struct {
-	Url     string `json:"url"`
-	Matches int32  `json:"matches"`
-	Rating  int32  `json:"rating"`
+	Description sql.NullString `json:"description"`
+	Url         string         `json:"url"`
+	Matches     int32          `json:"matches"`
+	Rating      int32          `json:"rating"`
 }
 
 func (q *Queries) CreatePicture(ctx context.Context, arg CreatePictureParams) (Picture, error) {
-	row := q.db.QueryRowContext(ctx, createPicture, arg.Url, arg.Matches, arg.Rating)
+	row := q.db.QueryRowContext(ctx, createPicture,
+		arg.Description,
+		arg.Url,
+		arg.Matches,
+		arg.Rating,
+	)
 	var i Picture
 	err := row.Scan(
 		&i.ID,
@@ -189,18 +196,19 @@ func (q *Queries) ListPictures(ctx context.Context, arg ListPicturesParams) ([]P
 
 const updatePicture = `-- name: UpdatePicture :one
 UPDATE pictures
-SET rating = $2
+SET rating = $2, matches = $3
 WHERE id = $1
 RETURNING id, description, user_id, url, matches, rating, created_at
 `
 
 type UpdatePictureParams struct {
-	ID     int32 `json:"id"`
-	Rating int32 `json:"rating"`
+	ID      int32 `json:"id"`
+	Rating  int32 `json:"rating"`
+	Matches int32 `json:"matches"`
 }
 
 func (q *Queries) UpdatePicture(ctx context.Context, arg UpdatePictureParams) (Picture, error) {
-	row := q.db.QueryRowContext(ctx, updatePicture, arg.ID, arg.Rating)
+	row := q.db.QueryRowContext(ctx, updatePicture, arg.ID, arg.Rating, arg.Matches)
 	var i Picture
 	err := row.Scan(
 		&i.ID,
